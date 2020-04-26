@@ -87,16 +87,6 @@
 
 
 
-### databases 
-
-| Name  | Description  | parameters|  output  | Example  | 
-|---|---|---|---|---|
-| getcollections  | find the apropiate collection of subdomain  |getcollection(string)   | getcollection('admin.typeform.tf')   |
-| database_pattern  | return pattern of data used to save scan results  |database_pattern(string,string,dict)   |<Dict> data object   | database_pattern('typefrom.com','open_redirect',dictionary_data)  |
-|   |   |   |   |   |
-|   |   |   |   |   |
-
-
 
 ```python
 import sys

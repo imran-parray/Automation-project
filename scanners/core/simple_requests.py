@@ -23,10 +23,12 @@ for i in range(10000):
 def simpleget(url):
 	try:
 		res=requests.get(url,timeout=4)
-	except:
-		print('Error: simpleget()')
+	except Exception as e:
+		print(e)
 	else:
 		return res
+
+
 
 
 def simplepost(url,param):
@@ -43,8 +45,8 @@ def simpleput(url,*param):
 	parameters=dict(param)
 	try:
 		res=requests.put(url,params=param,timeout=4)
-	except:
-		print('Error: simpleput()')
+	except Exception as e:
+		print(e)
 	else:
 		return res
 
@@ -54,8 +56,8 @@ def simpledelete(url,*param):
 	parameters=dict(param)
 	try:
 		res=requests.delete(url,params=param,timeout=4)
-	except:
-		print('Error: simpledelete()')
+	except Exception as e:
+		print(e)
 	else:
 		return res
 
@@ -67,8 +69,8 @@ def simplepatch(url,*param):
 	parameters=dict(param)
 	try:
 		res=requests.patch(url,params=param,timeout=4)
-	except:
-		print('Error: simplepatch()')
+	except Exception as e:
+		print(e)
 	else:
 		return res
 

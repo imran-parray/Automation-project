@@ -33,6 +33,12 @@ def readmultifiles(*files):
 		return words
 
 
+def findforme(data,listx):
+	for a in listx:
+		if a in data:
+			return True
+		else:
+			return False
 
 
 
@@ -48,6 +54,9 @@ def readjson(file):
 	else:
 		return json_data
 
+
 def removedupes(mylist):
 	return list(dict.fromkeys(mylist))
 
+def removefirstfromlist(num,wlist):
+	del wlist[0:num]
