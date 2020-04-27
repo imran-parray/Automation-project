@@ -135,7 +135,7 @@ for subdomain in subdomains:
 		writetofile('../output/subjack/logs/subjack.log',subdomain)
 		new_subdomain_http=addprotocol(subdomain, 'http')
 		new_subdomain_https=addprotocol(subdomain, 'https')
-	
+		print("[~] Done : "+subdomain)
 
 #For HTTPS:
 
@@ -150,14 +150,14 @@ for subdomain in subdomains:
 					msg='[~] Possible Subdomain Takeover: '+res1.url+'\n'
 					print(msg)
 					sendtoslack(msg)
-					writetofile('../output/subjack/output/subjack.txt')
+					writetofile('../output/subjack/output/subjack.txt',res2.url)
 			try:
-				for a in res2.history:
+				for a in res1.history:
 					if 'statuspage.io' in a.headers['location']:
-						msg='[~] Redirect Possible Subdomain Takeover: '+res2.url+'\n'
+						msg='[~] Redirect Possible Subdomain Takeover: '+res1.url+'\n'
 						print(msg)
 						sendtoslack(msg)
-						writetofile('../output/subjack/output/subjack.txt')
+						writetofile('../output/subjack/output/subjack.txt',res1.url)
 			except:
 				pass
 
@@ -177,13 +177,13 @@ for subdomain in subdomains:
 					msg='[~] Possible Subdomain Takeover: '+res2.url
 					print(msg)
 					sendtoslack(msg)
-					writetofile('../output/subjack/output/subjack.txt',msg)
+					writetofile('../output/subjack/output/subjack.txt',res2.url)
 			try:
 				for a in res2.history:
 					if 'statuspage.io' in a.headers['location']:
 						msg='[~] Redirect Possible Subdomain Takeover: '+res2.url+'\n'
 						print(msg)
 						sendtoslack(msg)
-						writetofile('../output/subjack/output/subjack.txt')
+						writetofile('../output/subjack/output/subjack.txt',res2.url)
 			except:
 				pass
