@@ -8,7 +8,7 @@ from core.networking import iswildcard
 
 
 count=0
-subdomains=subdomainsall('../target-data/test1.txt')
+subdomains=subdomainsall('../target-data/no_wild_cards.txt')
 payload=readfile('../payloads/leaked_files.txt')
 for subdomain in subdomains:
 	count+=1

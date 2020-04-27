@@ -1,8 +1,8 @@
 import time
 from core.subdomains import subdomainsall,addprotocol
-from core.simple_requests import simpleget
+import requests
 from core.networking import isalive
-from core.files import readfile,findforme
+from core.files import readfile
 from core.output import sendtoslack,writetofile
 from core.networking import iswildcard
 
@@ -71,7 +71,7 @@ data=["<strong>Trying to access your account",
 "No Site For Domain",                                                 
 "It looks like you may have taken a wrong turn somewhere. Don't worry...it happens to all of us.",                                                 
 "Tunnel *.ngrok.io not found", 
-"404 error unknown site!",                                                 
+"404 error unknown site!",                                                
 "Project doesnt exist... yet!", 
 "This job board website is either expired or its domain name is invalid.", 
 "page not found",                                                 
@@ -129,29 +129,61 @@ count=0
 subdomains=subdomainsall('../target-data/test1.txt')
 for subdomain in subdomains:
 	count+=1
-	if(count%1000==0):
+	if(count%5000==0):
 		sendtoslack("[~] Status (subdomain Takeover) :\nTotal Domains:"+str(len(subdomains))+"\n"+"Domains Scanned: "+str(count))
+	if isalive(subdomain):
 		writetofile('../output/subjack/logs/subjack.log',subdomain)
 		new_subdomain_http=addprotocol(subdomain, 'http')
-		new_subdomain_https=addprotocol(subdomain, 'http')
-		res1=simpleget(new_subdomain_http)
+		new_subdomain_https=addprotocol(subdomain, 'https')
+	
 
-		# try:
-		# 	res1=simpleget(new_subdomain_http)
-		# except Exception as e:
-		# 	print(e)
-		# else:
-		# 	if findforme(res1.text, data)==True:
-		# 		msg='[~] Possible Subdomain Takeover: '+res1.url
-		# 		sendtoslack(msg)
+#For HTTPS:
 
-		# try:
-		# 	res2=simpleget(new_subdomain_https)
-		# except Exception as e:
-		# 	print(e)
-		# else:
-		# 	if findforme(res2.text, data)==True:
-		# 		msg='[~] Possible Subdomain Takeover: '+res2.url
-		# 		sendtoslack(msg)
+		try:
+			res1=requests.get(new_subdomain_https,timeout=3)
+		except Exception as e:
+			print('[!] Error !')
+		else:
+
+			for pattern in data:
+				if pattern in res1.text:
+					msg='[~] Possible Subdomain Takeover: '+res1.url+'\n'
+					print(msg)
+					sendtoslack(msg)
+					writetofile('../output/subjack/output/subjack.txt')
+			try:
+				for a in res2.history:
+					if 'statuspage.io' in a.headers['location']:
+						msg='[~] Redirect Possible Subdomain Takeover: '+res2.url+'\n'
+						print(msg)
+						sendtoslack(msg)
+						writetofile('../output/subjack/output/subjack.txt')
+			except:
+				pass
 
 
+
+
+##For HTTP
+
+
+		try:
+			res2=requests.get(new_subdomain_http,timeout=3)
+		except Exception as e:
+			print('[!] Error !')
+		else:
+			for pattern in data:
+				if pattern in res2.text:
+					msg='[~] Possible Subdomain Takeover: '+res2.url
+					print(msg)
+					sendtoslack(msg)
+					writetofile('../output/subjack/output/subjack.txt',msg)
+			try:
+				for a in res2.history:
+					if 'statuspage.io' in a.headers['location']:
+						msg='[~] Redirect Possible Subdomain Takeover: '+res2.url+'\n'
+						print(msg)
+						sendtoslack(msg)
+						writetofile('../output/subjack/output/subjack.txt')
+			except:
+				pass
