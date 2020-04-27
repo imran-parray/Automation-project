@@ -6,7 +6,9 @@ from core.files import readfile
 from core.output import sendtoslack,writetofile
 from core.networking import iswildcard
 
-
+#Insert time
+xtime=current_en_time()
+writetofile('../output/leaked_files/output/leaked_files.txt', xtime)
 
 data=["<strong>Trying to access your account",
 "Use a personal domain name",

@@ -3,5 +3,5 @@
 /explore/repos
 /phpinfo.php
 /info.php
-/phptest.php
+/login.php
 /red.php

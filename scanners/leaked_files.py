@@ -5,6 +5,10 @@ from core.networking import isalive
 from core.files import readfile,removedupes
 from core.output import sendtoslack,writetofile
 from core.networking import iswildcard,ishttpwildcard
+from core.timendate import current_en_time
+#Insert time
+xtime=current_en_time()
+writetofile('../output/leaked_files/output/leaked_files.txt', xtime)
 
 count=0
 subdomains=subdomainsall('../target-data/test1.txt')
@@ -28,10 +32,10 @@ for subdomain in subdomains:
 			data.append(response['url'])
 
 	if len(data)>0:
-		strx='[Bug Bot] Hey imran ! I Found Something Intresting \n[Module:Leaked_files]\n\n'
+		strx='\n[Module : Leaked_files]\n\n'
 		data2=removedupes(data)
 		for d in data2:
 			strx=strx+d+'\n'
-			writetofile('../output/leaked_files/output/leaked_files.txt', d)
+			writetofile('../output/leaked_files/output/leaked_files.txt', d+'\n')
 		sendtoslack(strx)
 		

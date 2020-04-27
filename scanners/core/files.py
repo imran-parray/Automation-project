@@ -33,16 +33,12 @@ def readmultifiles(*files):
 		return words
 
 
-#def findforme(data,listx):
-
-# 	for a in listx:
-# 		print('=====xxx===data=========')
-# 		print(data)
-# 		print('======================')
-# 		if a in data:
-# 			return True
-# 		else:
-# 			return False
+def findforme(data,listx):
+	for a in listx:
+		if a in data:
+			return True
+		else:
+			return False
 
 
 
