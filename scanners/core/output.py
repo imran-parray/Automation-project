@@ -10,7 +10,7 @@ def sendtoslack(msg):
 	print('Sending to Slack[ hackerXcreed ]')
 
 
-def writetofile(file,msg):
+def writetofile(file,msg,method='a'):
 	filename=file
 	msg=str(msg)
 	try:
