@@ -12,9 +12,9 @@ from core.urls import fuzzableurls
 from core.wayback import waybackparamurls
 from core.networking import isalive
 from core.subdomains import addprotocol
-
+from core.networking import ishttpwildcard
 #ReadingSubdomains
-domains_all=readfile('test.py')
+domains_all=readfile('../target-data/no_wild_cards_2.txt')
 
 
 #Reading Variables / Count Variables
@@ -35,7 +35,7 @@ if sys.argv[1] not in cli:
 	print('Expected Arguments: ',cli)
 	exit()
 
-
+choice=sys.argv[1]
 
 
 ## Scanners 
@@ -43,6 +43,11 @@ if sys.argv[1] not in cli:
 
 
 def leaked_files(url):
+	domain=getdomain(url)
+	print('[~] Scanning '+domain)
+	blacklist_domains=[]
+	if domain in blacklist_domains:
+		return None
 	name=inspect.stack()[0][3]
 	log_file='../output/'+name+'/logs/'+name+'.log'
 	output_file='../output/'+name+'/output/'+name+'.txt'
@@ -51,6 +56,8 @@ def leaked_files(url):
 	if(leaked_count%10000==0):
 		sendtoslack("[~] Status (leaked_files) :\nTotal Domains:"+str(len(getdomain(url)))+"\n"+"Domains Scanned: "+str(leaked_count))
 	writetofile(log_file,getdomain(url))	
+	if ishttpwildcard(domain)==True:
+		blacklist_domains.append(domain)
 	try:
 		res=requests.get(url,timeout=2)
 	except Exception as e:
@@ -68,6 +75,7 @@ def leaked_files(url):
 
 
 def open_redirect(url):
+	print('[~] Scanning '+getdomain(url))
 	name=inspect.stack()[0][3]
 	log_file='../output/'+name+'/logs/'+name+'.log'
 	output_file='../output/'+name+'/output/'+name+'.txt'
@@ -95,7 +103,7 @@ def open_redirect(url):
 ##======================Subdomain takeover==================================================
 
 def subjack(subdomain):
-	print(subdomain)
+	print("[~] Scanning "+subdomain)
 	writetofile('../output/subjack/logs/subjack.log',subdomain)
 	new_subdomain_http=addprotocol(subdomain, 'http')
 	new_subdomain_https=addprotocol(subdomain, 'https')
@@ -149,6 +157,11 @@ def subjack(subdomain):
 
 
 def login_finder(url):
+	domain=getdomain(url)
+	print('[~] Scanning '+domain)
+	blacklist_domains=[]
+	if domain in blacklist_domains:
+		return None
 	name=inspect.stack()[0][3]
 	log_file='../output/'+name+'/logs/'+name+'.log'
 	output_file='../output/'+name+'/output/'+name+'.txt'
@@ -157,6 +170,8 @@ def login_finder(url):
 	if(leaked_count%10000==0):
 		sendtoslack("[~] Status (Login Finder) :\nTotal Domains:"+str(len(getdomain(url)))+"\n"+"Domains Scanned: "+str(leaked_count))
 	writetofile(log_file,getdomain(url))	
+	if ishttpwildcard(domain)==True:
+		blacklist_domains.append(domain)
 	try:
 		res=requests.get(url,timeout=2)
 	except Exception as e:
