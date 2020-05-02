@@ -22,11 +22,11 @@ redirect_count=0
 leaked_count=0
 subdomain_patterns=readfile('../payloads/subjack.txt')
 
-cli=['open_redirect','subjack','leaked_files','login_finder']
+cli=['open_redirect','subjack','leaked_files','login_finder','test']
 
 
 
-# Imput Validation
+##Imput Validation
 if len(sys.argv)<2:
 	print('Expected Arguments: ',cli)
 	exit()
@@ -54,20 +54,19 @@ def leaked_files(url):
 	global leaked_count
 	leaked_count+=1
 	if(leaked_count%10000==0):
-		sendtoslack("[~] Status (leaked_files) :\nTotal Domains:"+str(len(getdomain(url)))+"\n"+"Domains Scanned: "+str(leaked_count))
+		sendtoslack("[~] Status (leaked_files) :\nTotal Domains:"+str(len(domains_all))+"\n"+"Domains Scanned: "+str(leaked_count))
 	writetofile(log_file,getdomain(url))	
 	if ishttpwildcard(domain)==True:
 		blacklist_domains.append(domain)
 	try:
-		res=requests.get(url,timeout=2)
+		res=requests.get(url,timeout=2,allow_redirects = False)
 	except Exception as e:
 		pass
 	else:
 		print(res.url,':',res.status_code)
-	if res.status_code==200:
-		appendtofile(output_file,res.url)
-		sendtoslack("[~] Leaked Files "+res.url)
-
+		if res.status_code==200:
+			appendtofile(output_file,res.url)
+			sendtoslack("[~] Leaked Files "+res.url)
 
 
 
@@ -82,7 +81,7 @@ def open_redirect(url):
 	global redirect_count
 	redirect_count+=1
 	if(redirect_count%10000==0):
-		sendtoslack("[~] Open_redirect (leaked_files) :\nTotal Domains:"+str(len(getdomain(url)))+"\n"+"Domains Scanned: "+str(leaked_count))
+		sendtoslack("[~] Open_redirect (leaked_files) :\nTotal Domains:"+str(len(domains_all))+"\n"+"Domains Scanned: "+str(leaked_count))
 	writetofile(log_file,getdomain(url))	
 	try:
 		res=requests.get(url,timeout=2)
@@ -156,24 +155,29 @@ def subjack(subdomain):
 ##=========================== Default Login ====================================================
 
 
+
+
+blacklist_domains_login_finder=[]
 def login_finder(url):
+	global blacklist_domains_login_finder
+	global leaked_count
 	domain=getdomain(url)
-	print('[~] Scanning '+domain)
-	blacklist_domains=[]
-	if domain in blacklist_domains:
-		return None
+	#print('[~] Scanning '+domain)
+	blacklist_domains_login_finder=[]
+	if domain in blacklist_domains_login_finder:
+		print('[!] Blacklisted')
 	name=inspect.stack()[0][3]
 	log_file='../output/'+name+'/logs/'+name+'.log'
 	output_file='../output/'+name+'/output/'+name+'.txt'
-	global leaked_count
+	
 	leaked_count+=1
 	if(leaked_count%10000==0):
-		sendtoslack("[~] Status (Login Finder) :\nTotal Domains:"+str(len(getdomain(url)))+"\n"+"Domains Scanned: "+str(leaked_count))
+		sendtoslack("[~] Status (login_finder) :\nTotal Domains:"+str(len(domains_all))+"\n"+"Domains Scanned: "+str(leaked_count))
 	writetofile(log_file,getdomain(url))	
 	if ishttpwildcard(domain)==True:
-		blacklist_domains.append(domain)
+		blacklist_domains_login_finder.append(domain)
 	try:
-		res=requests.get(url,timeout=2)
+		res=requests.get(url,timeout=2,allow_redirects = False)
 	except Exception as e:
 		pass
 	else:
@@ -181,11 +185,43 @@ def login_finder(url):
 	if res.status_code==200:
 		if '<form' in res.text:
 			appendtofile(output_file,res.url)
-			sendtoslack("[~] Leaked Files "+res.url)		
+			sendtoslack("[~] Login Finder "+res.url)
 
 
 
+##=========================== Wayback XSS  ====================================================
 
+
+blacklist_domains_waybackxss=[]
+def waybackxss(url):
+	pattern='AB_X@Y'
+	global blacklist_domains_waybackxss
+	global leaked_count
+	domain=getdomain(url)
+	#print('[~] Scanning '+domain)
+	blacklist_domains_waybackxss=[]
+	if domain in blacklist_domains_waybackxss:
+		print('[!] Blacklisted')
+	name=inspect.stack()[0][3]
+	log_file='../output/'+name+'/logs/'+name+'.log'
+	output_file='../output/'+name+'/output/'+name+'.txt'
+	
+	leaked_count+=1
+	if(leaked_count%10000==0):
+		sendtoslack("[~] Status (login_finder) :\nTotal Domains:"+str(len(domains_all))+"\n"+"Domains Scanned: "+str(leaked_count))
+	writetofile(log_file,getdomain(url))	
+	if ishttpwildcard(domain)==True:
+		blacklist_domains_waybackxss.append(domain)
+	try:
+		res=requests.get(url,timeout=2,allow_redirects = False)
+	except Exception as e:
+		pass
+	else:
+		print(res.url,':',res.status_code)
+	if res.status_code==200:
+		if pattern in res.text:
+			appendtofile(output_file,res.url)
+			sendtoslack("[~] Login Finder "+res.url)
 
 
 
@@ -203,10 +239,16 @@ if len(choice)>0:
 
 
 
-##Starter
+# ##Starter
+
 for domain in domains_all:
+
+
+	if choice=='test':
+		pass
+
 	if choice=='leaked_files':
-		urls=makeurls('http',domain,readfile('../payloads/leaked_files.txt'))
+		urls=makeurls('https',domain,readfile('../payloads/leaked_files.txt'))
 		with concurrent.futures.ThreadPoolExecutor() as executor:
 			executor.map(leaked_files,urls)
 
@@ -221,13 +263,16 @@ for domain in domains_all:
 		with concurrent.futures.ThreadPoolExecutor() as executor:
 			executor.map(subjack,domains_all)
 
-for domain in domains_all:
-	if choice=='leaked_files':
-		urls=makeurls('http',domain,readfile('../payloads/login_finder.txt'))
+	if choice=='login_finder':
+		urls=makeurls('https',domain,readfile('../payloads/login_finder.txt'))
 		with concurrent.futures.ThreadPoolExecutor() as executor:
 			executor.map(login_finder,urls)
 
 	
+	if choice=='waybackxss':
+		urls=makeurls('https',domain,fuzzableurls(waybackparamurls(domain,True),'AB_X@Y'))
+		with concurrent.futures.ThreadPoolExecutor() as executor:
+			executor.map(open_redirect,urls)
 
 
 
