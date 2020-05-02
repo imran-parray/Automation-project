@@ -1,19 +1,2 @@
-
-
-
-
-Sat May  2 07:58:51 2020
-========================
-
-
-http://192.168.64.2/red.php
-http://192.168.64.2/red.php
-https://www.google.com/
-https://www.google.com/
-https://www.google.com/
-https://www.google.com/
-https://www.google.com/
-https://www.google.com/
-https://www.google.com/
-https://www.google.com/
-https://www.google.com/
+https://researcher.vtu.ac.in/
+https://researcher.vtu.ac.in/
