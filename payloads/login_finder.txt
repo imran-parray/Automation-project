@@ -1,6 +1,7 @@
 /acceso.asp
 /acceso.php
 /access/
+/login/
 /access.php
 /account/
 /account.asp
