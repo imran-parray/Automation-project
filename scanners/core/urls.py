@@ -3,6 +3,17 @@ from core.files import removedupes
 import re
 import sys
 
+def getdomain(url):
+	return url.split('/')[2]
+
+
+def makeurls(protocol,domain,payloads):
+	urls=[]
+	for payload in payloads:
+		urls.append(protocol+'://'+domain+'/'+payload.lstrip('/'))
+	return urls
+
+
 
 def fuzzableurls(list_of_urls,payload=''):
 	if payload=='':

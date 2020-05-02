@@ -12,7 +12,7 @@ def wayback(url,include_subdomains):
 			wayback_url='http://web.archive.org/cdx/search/cdx?url=*.'+url+'/*&output=texts&fl=original&collapse=urlkey'
 		else:
 			wayback_url='http://web.archive.org/cdx/search/cdx?url='+url+'/*&output=texts&fl=original&collapse=urlkey'
-		res=requests.get(wayback_url,timeout=30)
+		res=requests.get(wayback_url,timeout=15)
 	except Exception as e:
 		print(e)
 	else:
@@ -30,7 +30,7 @@ def waybackwordlist(url,include_subdomains):
 			wayback_url='http://web.archive.org/cdx/search/cdx?url=*.'+url+'/*&output=texts&fl=original&collapse=urlkey'
 		else:
 			wayback_url='http://web.archive.org/cdx/search/cdx?url='+url+'/*&output=texts&fl=original&collapse=urlkey'
-		res=requests.get(wayback_url,timeout=30)
+		res=requests.get(wayback_url,timeout=15)
 	except Exception as e:
 		print(e)
 	else:
@@ -51,7 +51,7 @@ def waybackparams(url,include_subdomains):
 			wayback_url='http://web.archive.org/cdx/search/cdx?url=*.'+url+'/*&output=texts&fl=original&collapse=urlkey'
 		else:
 			wayback_url='http://web.archive.org/cdx/search/cdx?url='+url+'/*&output=texts&fl=original&collapse=urlkey'
-		res=requests.get(wayback_url,timeout=30)
+		res=requests.get(wayback_url,timeout=15)
 	except Exception as e:
 		print(e)
 	else:
@@ -80,7 +80,7 @@ def waybackparamurls(url,include_subdomains):
 			wayback_url='http://web.archive.org/cdx/search/cdx?url=*.'+url+'/*&output=texts&fl=original&collapse=urlkey'
 		else:
 			wayback_url='http://web.archive.org/cdx/search/cdx?url='+url+'/*&output=texts&fl=original&collapse=urlkey'
-		res=requests.get(wayback_url,timeout=30)
+		res=requests.get(wayback_url,timeout=15)
 	except Exception as e:
 		print(e)
 	else:
@@ -101,7 +101,7 @@ def waybackpattern(url,include_subdomains,pattern):
 			wayback_url='http://web.archive.org/cdx/search/cdx?url=*.'+url+'/*&output=texts&fl=original&collapse=urlkey'
 		else:
 			wayback_url='http://web.archive.org/cdx/search/cdx?url='+url+'/*&output=texts&fl=original&collapse=urlkey'
-		res=requests.get(wayback_url,timeout=30)
+		res=requests.get(wayback_url,timeout=15)
 	except Exception as e:
 		print(e)
 	else:

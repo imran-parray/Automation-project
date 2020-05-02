@@ -1,1 +1,30 @@
-[~] Possible Subdomain Takeover: http://3.80.198.216/[~] Possible Subdomain Takeover: http://3.80.198.216/[~] Possible Subdomain Takeover: http://3.80.198.216/[~] Possible Subdomain Takeover: http://3.80.198.216/
+
+
+
+
+Sat May  2 09:35:32 2020
+========================
+
+
+http://192.168.64.2/
+http://192.168.64.2/
+
+
+
+
+Sat May  2 09:36:00 2020
+========================
+
+
+http://192.168.64.2/
+http://192.168.64.2/
+
+
+
+
+Sat May  2 09:36:07 2020
+========================
+
+
+http://192.168.64.2/
+http://192.168.64.2/

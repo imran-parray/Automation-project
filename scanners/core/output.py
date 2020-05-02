@@ -10,12 +10,21 @@ def sendtoslack(msg):
 	print('Sending to Slack[ hackerXcreed ]')
 
 
-def writetofile(file,msg,method='a'):
+def appendtofile(file,msg):
 	filename=file
 	msg=str(msg)
 	try:
 		with open(filename,'a') as fh:
-			fh.write(msg)
+			fh.write(msg+'\n')
+	except Exception as e:
+		print(e)
+
+def writetofile(file,msg):
+	filename=file
+	msg=str(msg)
+	try:
+		with open(filename,'w') as fh:
+			fh.write(msg+'\n')
 	except Exception as e:
 		print(e)
 

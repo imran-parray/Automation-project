@@ -11,7 +11,7 @@ xtime=current_en_time()
 writetofile('../output/leaked_files/output/leaked_files.txt', xtime)
 
 count=0
-subdomains=subdomainsall('../target-data/test1.txt')
+subdomains=subdomainsall('test.py')
 payload=readfile('../payloads/leaked_files.txt')
 for subdomain in subdomains:
 	count+=1
@@ -21,7 +21,6 @@ for subdomain in subdomains:
 	res=''
 	new_subdomain=addprotocol(subdomain, 'http')
 	print(new_subdomain)
-	print(ishttpwildcard(new_subdomain))
 	if ishttpwildcard(new_subdomain)==False:
 		writetofile('../output/open_redirect/logs/leaked_files.log',subdomain)
 		res=threadedget(new_subdomain,payload,10,'url','status_code')
