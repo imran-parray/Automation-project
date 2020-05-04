@@ -14,7 +14,7 @@ from core.networking import isalive
 from core.subdomains import addprotocol
 from core.networking import ishttpwildcard,restojson
 #ReadingSubdomains
-domains_all=readfile('../target-data/test.txt')
+domains_all=readfile('../target-data/subdomains_all.txt')
 
 
 #Reading Variables / Count Variables
