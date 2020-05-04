@@ -67,10 +67,33 @@ def ishttpwildcard(domain):
 		return True
 	else:
 		if r1.status_code and r2.status_code and r4.status_code and r5.status_code in [200,301,302]:
+			print(r1.status_code,r2.status_code,r4.status_code,r5.status_code)
 			return True
 
 		else:
+			print(r1.status_code,r2.status_code,r4.status_code,r5.status_code)
 			return False
+
+
+
+
+def restojson(domain):
+	resobj={}
+	url1=domain+"/.git/admin/login_Random_String"
+	
+	try:
+		r1=requests.head(url1,timeout=3)
+	
+	except Exception as e:
+		print(e)
+		return True
+	else:
+		resobj['url']=r1.url
+		resobj['status_code']=r1.status_code
+		resobj['headers']=r1.headers
+		return resobj
+
+
 
 
 
