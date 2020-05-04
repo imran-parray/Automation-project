@@ -12,9 +12,9 @@ from core.urls import fuzzableurls
 from core.wayback import waybackparamurls
 from core.networking import isalive
 from core.subdomains import addprotocol
-from core.networking import ishttpwildcard
+from core.networking import ishttpwildcard,restojson
 #ReadingSubdomains
-domains_all=readfile('../target-data/no_wild_cards_2.txt')
+domains_all=readfile('../target-data/test.txt')
 
 
 #Reading Variables / Count Variables
@@ -22,7 +22,7 @@ redirect_count=0
 leaked_count=0
 subdomain_patterns=readfile('../payloads/subjack.txt')
 
-cli=['open_redirect','subjack','leaked_files','login_finder','test']
+cli=['waybackxss','open_redirect','subjack','leaked_files','login_finder','test']
 
 
 
@@ -44,10 +44,8 @@ choice=sys.argv[1]
 
 def leaked_files(url):
 	domain=getdomain(url)
+	black_list=restojson('https://'+domain)
 	print('[~] Scanning '+domain)
-	blacklist_domains=[]
-	if domain in blacklist_domains:
-		return None
 	name=inspect.stack()[0][3]
 	log_file='../output/'+name+'/logs/'+name+'.log'
 	output_file='../output/'+name+'/output/'+name+'.txt'
@@ -56,8 +54,6 @@ def leaked_files(url):
 	if(leaked_count%10000==0):
 		sendtoslack("[~] Status (leaked_files) :\nTotal Domains:"+str(len(domains_all))+"\n"+"Domains Scanned: "+str(leaked_count))
 	writetofile(log_file,getdomain(url))	
-	if ishttpwildcard(domain)==True:
-		blacklist_domains.append(domain)
 	try:
 		res=requests.get(url,timeout=2,allow_redirects = False)
 	except Exception as e:
@@ -65,8 +61,9 @@ def leaked_files(url):
 	else:
 		print(res.url,':',res.status_code)
 		if res.status_code==200:
-			appendtofile(output_file,res.url)
-			sendtoslack("[~] Leaked Files "+res.url)
+			if res.status_code!=black_list['status_code'] and res.headers['content-lenght']!=black_list.headers['content-lenght']:
+				appendtofile(output_file,res.url+" : "+res.status_code+" : "+res.headers['content-lenght'])
+				sendtoslack("[~] Leaked Files "+res.url)
 
 
 
@@ -91,7 +88,7 @@ def open_redirect(url):
 		print(res.url,' : ',res.status_code)
 	for a in res.history:
 		if a.status_code==302 and 'example' in a.headers['location']:
-			writetofile(output_file,res.url)
+			appendtofile(output_file,res.url+" : "+res.status_code+" : "+str(len(res.text)))
 			sendtoslack("[~] Open Redirect "+a.url)
 
 
@@ -184,7 +181,7 @@ def login_finder(url):
 		print(res.url,':',res.status_code)
 	if res.status_code==200:
 		if '<form' in res.text:
-			appendtofile(output_file,res.url)
+			appendtofile(output_file,res.url+" : "+res.status_code+" : "+str(len(res.text)))
 			sendtoslack("[~] Login Finder "+res.url)
 
 
@@ -208,7 +205,7 @@ def waybackxss(url):
 	
 	leaked_count+=1
 	if(leaked_count%10000==0):
-		sendtoslack("[~] Status (login_finder) :\nTotal Domains:"+str(len(domains_all))+"\n"+"Domains Scanned: "+str(leaked_count))
+		sendtoslack("[~] Status (WaybackXSS) :\nTotal Domains:"+str(len(domains_all))+"\n"+"Domains Scanned: "+str(leaked_count))
 	writetofile(log_file,getdomain(url))	
 	if ishttpwildcard(domain)==True:
 		blacklist_domains_waybackxss.append(domain)
@@ -221,7 +218,34 @@ def waybackxss(url):
 	if res.status_code==200:
 		if pattern in res.text:
 			appendtofile(output_file,res.url)
-			sendtoslack("[~] Login Finder "+res.url)
+			sendtoslack("[~] Reflection Detected "+res.url)
+
+
+
+
+
+
+## ================================== CRLF ===============================================
+def crlf(url):
+	print('[~] Scanning '+getdomain(url))
+	name=inspect.stack()[0][3]
+	log_file='../output/'+name+'/logs/'+name+'.log'
+	output_file='../output/'+name+'/output/'+name+'.txt'
+	global redirect_count
+	redirect_count+=1
+	if(redirect_count%10000==0):
+		sendtoslack("[~] CRLF (leaked_files) :\nTotal Domains:"+str(len(domains_all))+"\n"+"Domains Scanned: "+str(leaked_count))
+	writetofile(log_file,getdomain(url))	
+	try:
+		res=requests.get(url,timeout=2)
+	except Exception as e:
+		pass
+	else:
+		print(res.url,' : ',res.status_code)
+	for a in res.headers:
+		if 'Header-Test' in a:
+			appendtofile(output_file,res.url+" : "+str(res.status_code)+" : "+str(len(res.text)))
+			sendtoslack("[~] CRLF "+res.url)
 
 
 
@@ -264,7 +288,7 @@ for domain in domains_all:
 			executor.map(subjack,domains_all)
 
 	if choice=='login_finder':
-		urls=makeurls('https',domain,readfile('../payloads/login_finder.txt'))
+		urls=makeurls('http',domain,readfile('../payloads/login_finder.txt'))
 		with concurrent.futures.ThreadPoolExecutor() as executor:
 			executor.map(login_finder,urls)
 
@@ -272,10 +296,13 @@ for domain in domains_all:
 	if choice=='waybackxss':
 		urls=makeurls('https',domain,fuzzableurls(waybackparamurls(domain,True),'AB_X@Y'))
 		with concurrent.futures.ThreadPoolExecutor() as executor:
-			executor.map(open_redirect,urls)
+			executor.map(waybackxss,urls)
 
 
-
+	if choice=='crlf':
+		urls=makeurls('http',domain,readfile('../payloads/crlf.txt'))
+		with concurrent.futures.ThreadPoolExecutor() as executor:
+			executor.map(login_finder,urls)
 
 
 

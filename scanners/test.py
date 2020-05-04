@@ -1,63 +1,90 @@
-from bs4 import BeautifulSoup
+import time
+import sys
+import concurrent.futures
 import requests
+import inspect
+from core.files import readfile
+from core.output import sendtoslack
+from core.urls import makeurls,getdomain
+from core.timendate import current_en_time
+from core.output import writetofile,appendtofile
+from core.urls import fuzzableurls
+from core.wayback import waybackparamurls
+from core.networking import isalive
+from core.subdomains import addprotocol
+from core.networking import ishttpwildcard,restojson
+#ReadingSubdomains
+domains_all=readfile('../target-data/test.txt')
 
 
-url='http://192.168.64.2/red.php'
-res=requests.get(url)
-doc=BeautifulSoup(res.text,'lxml')
+#Reading Variables / Count Variables
+redirect_count=0
+leaked_count=0
+subdomain_patterns=readfile('../payloads/subjack.txt')
+
+choice=sys.argv[1]
 
 
 
-form_tags=doc.find('form')
-action_link=form_tags.get('action')
-method=form_tags.get('method')
 
-print(method)
 
-params=[]
-for var in form_tags.find_all('input'):
+##==========================================================================================
+
+def crlf(url):
+	print('[~] Scanning '+getdomain(url))
+	name=inspect.stack()[0][3]
+	log_file='../output/'+name+'/logs/'+name+'.log'
+	output_file='../output/'+name+'/output/'+name+'.txt'
+	global redirect_count
+	redirect_count+=1
+	if(redirect_count%10000==0):
+		sendtoslack("[~] CRLF (leaked_files) :\nTotal Domains:"+str(len(domains_all))+"\n"+"Domains Scanned: "+str(leaked_count))
+	writetofile(log_file,getdomain(url))	
 	try:
-		params.append(var['name'])
-	except:
+		res=requests.get(url,timeout=2)
+	except Exception as e:
+		pass
+	else:
+		print(res.url,' : ',res.status_code)
+	for a in res.headers:
+		print(a)
+		if 'Header-Test' in a:
+			appendtofile(output_file,res.url+" : "+str(res.status_code)+" : "+str(len(res.text)))
+			sendtoslack("[~] CRLF "+res.url)
+
+
+
+##=========================== General Code ====================================================
+
+
+
+#Writing time to output Output file
+
+xtime=current_en_time()
+if len(choice)>0:
+	appendtofile('../output/'+choice+'/output/'+choice+'.txt', xtime)
+
+
+
+
+# ##Starter
+
+for domain in domains_all:
+
+
+	if choice=='test':
 		pass
 
-values=[
-'admin',
-'admin',
-'admin',
-'admin121',
-'password',
-'admin',
-'user',
-'userpass',
-'userpasst'
-]
 
-dic={}
-dic_data=[]
-count=0
-for i in range(len(values)):
-	count+=1
-	dic[params[i%len(params)]]=values[i]
-	print(dic,'\n\n')
-	dic_data.append(dic)
+	if choice=='crlf':
+		urls=makeurls('http',domain,readfile('../payloads/crlf.txt'))
+		with concurrent.futures.ThreadPoolExecutor() as executor:
+			executor.map(crlf,urls)
 
 
-print(f'[!] Detected New Form at {action_link}\n[~] Expected Method : {method}\n[~] Expected params : {params}\n[~] Starting Bruteforcing...')
 
-print(dic_data)
 
-# try:
-# 	for data in dic_data:
-# 		print(data)
-# 		if method=='post':
-# 			res=requests.post(url+action_link,data=data)
-# 		if method=='get':
-# 			s = requests.Session()
-# 			s.proxies = {'http' : 'localhost:8080', 'https' : 'localhost:8080'}
-# 			res = s.get(url+action_link,params=data, verify=False)
-# 		if method=='put':
-# 			res=requests.put(url+action_link,data=data,proxies=proxy)
-# 		print(res.url,res.status_code)
-# except:
-# 	pass
+
+
+
+
