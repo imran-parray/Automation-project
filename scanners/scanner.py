@@ -21,6 +21,9 @@ domains_all=readfile('../target-data/subdomains_all.txt')
 redirect_count=0
 leaked_count=0
 subdomain_patterns=readfile('../payloads/subjack.txt')
+log_file='../output/'+name+'/logs/'+name+'.log'
+output_file='../output/'+name+'/output/'+name+'.txt'
+
 
 cli=['waybackxss','open_redirect','subjack','leaked_files','login_finder','test']
 
@@ -47,8 +50,6 @@ def leaked_files(url):
 	black_list=restojson('https://'+domain)
 	print('[~] Scanning '+domain)
 	name=inspect.stack()[0][3]
-	log_file='../output/'+name+'/logs/'+name+'.log'
-	output_file='../output/'+name+'/output/'+name+'.txt'
 	global leaked_count
 	leaked_count+=1
 	if(leaked_count%10000==0):
@@ -73,8 +74,6 @@ def leaked_files(url):
 def open_redirect(url):
 	print('[~] Scanning '+getdomain(url))
 	name=inspect.stack()[0][3]
-	log_file='../output/'+name+'/logs/'+name+'.log'
-	output_file='../output/'+name+'/output/'+name+'.txt'
 	global redirect_count
 	redirect_count+=1
 	if(redirect_count%10000==0):
@@ -164,8 +163,6 @@ def login_finder(url):
 	if domain in blacklist_domains_login_finder:
 		print('[!] Blacklisted')
 	name=inspect.stack()[0][3]
-	log_file='../output/'+name+'/logs/'+name+'.log'
-	output_file='../output/'+name+'/output/'+name+'.txt'
 	
 	leaked_count+=1
 	if(leaked_count%10000==0):
@@ -200,8 +197,6 @@ def waybackxss(url):
 	if domain in blacklist_domains_waybackxss:
 		print('[!] Blacklisted')
 	name=inspect.stack()[0][3]
-	log_file='../output/'+name+'/logs/'+name+'.log'
-	output_file='../output/'+name+'/output/'+name+'.txt'
 	
 	leaked_count+=1
 	if(leaked_count%10000==0):
@@ -229,8 +224,6 @@ def waybackxss(url):
 def crlf(url):
 	print('[~] Scanning '+getdomain(url))
 	name=inspect.stack()[0][3]
-	log_file='../output/'+name+'/logs/'+name+'.log'
-	output_file='../output/'+name+'/output/'+name+'.txt'
 	global redirect_count
 	redirect_count+=1
 	if(redirect_count%10000==0):
