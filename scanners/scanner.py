@@ -41,7 +41,7 @@ choice=sys.argv[1]
 name=choice
 
 #Output Files
-log_file='../output/'+name+'/logs/'+name+'.log'
+log_file='../output/'+name+'/logs/'+name+'.txt'
 output_file='../output/'+name+'/output/'+name+'.txt'
 
 ## Scanners 
@@ -51,7 +51,6 @@ output_file='../output/'+name+'/output/'+name+'.txt'
 def leaked_files(url):
 	domain=getdomain(url)
 	black_list=restojson('https://'+domain)
-	print('[~] Scanning '+domain)
 	name=inspect.stack()[0][3]
 	global leaked_count
 	leaked_count+=1
@@ -75,7 +74,6 @@ def leaked_files(url):
 
 
 def open_redirect(url):
-	print('[~] Scanning '+getdomain(url))
 	name=inspect.stack()[0][3]
 	global redirect_count
 	redirect_count+=1
@@ -101,7 +99,6 @@ def open_redirect(url):
 ##======================Subdomain takeover==================================================
 
 def subjack(subdomain):
-	print("[~] Scanning "+subdomain)
 	writetofile('../output/subjack/logs/subjack.log',subdomain)
 	new_subdomain_http=addprotocol(subdomain, 'http')
 	new_subdomain_https=addprotocol(subdomain, 'https')
@@ -161,7 +158,6 @@ def login_finder(url):
 	global blacklist_domains_login_finder
 	global leaked_count
 	domain=getdomain(url)
-	#print('[~] Scanning '+domain)
 	blacklist_domains_login_finder=[]
 	if domain in blacklist_domains_login_finder:
 		print('[!] Blacklisted')
@@ -195,7 +191,6 @@ def waybackxss(url):
 	global blacklist_domains_waybackxss
 	global leaked_count
 	domain=getdomain(url)
-	#print('[~] Scanning '+domain)
 	blacklist_domains_waybackxss=[]
 	if domain in blacklist_domains_waybackxss:
 		print('[!] Blacklisted')
@@ -225,7 +220,6 @@ def waybackxss(url):
 
 ## ================================== CRLF ===============================================
 def crlf(url):
-	print('[~] Scanning '+getdomain(url))
 	name=inspect.stack()[0][3]
 	global redirect_count
 	redirect_count+=1
