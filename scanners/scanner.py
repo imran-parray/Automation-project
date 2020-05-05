@@ -21,8 +21,7 @@ domains_all=readfile('../target-data/subdomains_all.txt')
 redirect_count=0
 leaked_count=0
 subdomain_patterns=readfile('../payloads/subjack.txt')
-log_file='../output/'+name+'/logs/'+name+'.log'
-output_file='../output/'+name+'/output/'+name+'.txt'
+
 
 
 cli=['waybackxss','open_redirect','subjack','leaked_files','login_finder','test']
@@ -39,7 +38,11 @@ if sys.argv[1] not in cli:
 	exit()
 
 choice=sys.argv[1]
+name=choice
 
+#Output Files
+log_file='../output/'+name+'/logs/'+name+'.log'
+output_file='../output/'+name+'/output/'+name+'.txt'
 
 ## Scanners 
 
