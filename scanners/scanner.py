@@ -87,7 +87,7 @@ def open_redirect(url):
 	except Exception as e:
 		pass
 	else:
-		print(res.url,' : ',res.status_code)
+		print(res.url+" : "+str(res.status_code)+" : "+str(len(res.text)))
 	for a in res.history:
 		if a.status_code==302 and 'example' in a.headers['location']:
 			appendtofile(output_file,res.url+" : "+res.status_code+" : "+str(len(res.text)))
@@ -178,7 +178,7 @@ def login_finder(url):
 	except Exception as e:
 		pass
 	else:
-		print(res.url,':',res.status_code)
+		print(res.url+" : "+str(res.status_code)+" : "+str(len(res.text)))
 	if res.status_code==200:
 		if '<form' in res.text:
 			appendtofile(output_file,res.url+" : "+res.status_code+" : "+str(len(res.text)))
@@ -212,7 +212,7 @@ def waybackxss(url):
 	except Exception as e:
 		pass
 	else:
-		print(res.url,':',res.status_code)
+		print(res.url+" : "+str(res.status_code)+" : "+str(len(res.text)))
 	if res.status_code==200:
 		if pattern in res.text:
 			appendtofile(output_file,res.url)
@@ -237,7 +237,7 @@ def crlf(url):
 	except Exception as e:
 		pass
 	else:
-		print(res.url,' : ',res.status_code)
+		print(res.url+" : "+str(res.status_code)+" : "+str(len(res.text)))
 	for a in res.headers:
 		if 'Header-Test' in a:
 			appendtofile(output_file,res.url+" : "+str(res.status_code)+" : "+str(len(res.text)))
@@ -298,7 +298,7 @@ for domain in domains_all:
 	if choice=='crlf':
 		urls=makeurls('http',domain,readfile('../payloads/crlf.txt'))
 		with concurrent.futures.ThreadPoolExecutor() as executor:
-			executor.map(login_finder,urls)
+			executor.map(crlf,urls)
 
 
 
